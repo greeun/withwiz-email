@@ -106,7 +106,7 @@ export function resolveTransportFromEnv(env: EmailEnv, options: ResolveOptions):
  * "misconfigured" instead of thrown: one banner line must not stop the server.
  * Real sends still throw.
  */
-export function transportLabelFromEnv(env: EmailEnv, options: ResolveOptions): string {
+export function transportLabelFromEnv(env: EmailEnv, options: ResolveOptions): EmailTransportName | "misconfigured" {
   try {
     return resolveTransportFromEnv(env, options).name;
   } catch {

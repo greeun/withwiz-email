@@ -26,6 +26,9 @@ describe("createSmtpTransport", () => {
       port: 587,
       secure: false,
       auth: { user: "u", pass: "p" },
+      connectionTimeout: 15_000,
+      greetingTimeout: 15_000,
+      socketTimeout: 15_000,
     });
     expect(sendMail).toHaveBeenCalledWith({
       from: "T <a@t.com>",
@@ -39,7 +42,27 @@ describe("createSmtpTransport", () => {
   it("defaults secure to true on port 465 and omits auth without a user", async () => {
     await createSmtpTransport({ host: "h", port: 465, from: "a@t.com" }).send({ to: ["b@t.com"], subject: "s", text: "t" });
 
-    expect(createTransport).toHaveBeenCalledWith({ host: "h", port: 465, secure: true, auth: undefined });
+    expect(createTransport).toHaveBeenCalledWith({
+      host: "h",
+      port: 465,
+      secure: true,
+      auth: undefined,
+      connectionTimeout: 15_000,
+      greetingTimeout: 15_000,
+      socketTimeout: 15_000,
+    });
+  });
+
+  it("passes timeoutMs through to the nodemailer timeouts", async () => {
+    await createSmtpTransport({ host: "h", port: 587, from: "a@t.com", timeoutMs: 5000 }).send({
+      to: ["b@t.com"],
+      subject: "s",
+      text: "t",
+    });
+
+    expect(createTransport).toHaveBeenCalledWith(
+      expect.objectContaining({ connectionTimeout: 5000, greetingTimeout: 5000, socketTimeout: 5000 }),
+    );
   });
 
   it("creates the nodemailer transporter once and reuses it", async () => {

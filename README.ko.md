@@ -49,11 +49,16 @@ Brevo → Mailjet → Resend → SMTP → console 순서입니다. 빈 문자열
 - `transportLabelFromEnv(env, options)`: 구동 배너에 쓸 이름. 예외를 던지는 대신 `"misconfigured"`를 반환
 - `emailFromEnv(env, defaultFrom)`
 - `createBrevoTransport`, `createMailjetTransport`, `createResendTransport` (`{ apiKey, from, fetchImpl?, timeoutMs? }`, 기본 타임아웃 15초)
-- `createSmtpTransport({ host, port, user?, pass?, secure?, from })`
+- `createSmtpTransport({ host, port, user?, pass?, secure?, from, timeoutMs? })` (연결·greeting·소켓 타임아웃, 기본 15초)
 - `createConsoleTransport({ logger? })`
 - `sendEach(transport, recipients, build, { logger? })`: 수신자마다 메시지 1건, 동시 5건, 대소문자 무시 중복 제거, `{ failed }` 반환, 전부 실패할 때만 예외
 - `withSendLog(transport, { logger? })`: 발송마다 로그 1줄, 본문과 헤더는 절대 기록하지 않음
 - `parseAddress`, `escapeHtml`, `recipientCount`, `consoleLogger`
+
+### 번들러 (Next.js)
+
+`import("nodemailer")`는 webpack/Turbopack이 빌드 시점에 해석한다. nodemailer를 설치하지 않는 앱은
+`next.config`에 `serverExternalPackages: ["@withwiz/email"]`을 추가하거나 nodemailer를 설치한다.
 
 ### 로거
 

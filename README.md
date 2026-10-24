@@ -49,11 +49,17 @@ Brevo → Mailjet → Resend → SMTP → console. Empty strings count as unset.
 - `transportLabelFromEnv(env, options)`: name for a startup banner, `"misconfigured"` instead of throwing
 - `emailFromEnv(env, defaultFrom)`
 - `createBrevoTransport`, `createMailjetTransport`, `createResendTransport` (`{ apiKey, from, fetchImpl?, timeoutMs? }`, default timeout 15 s)
-- `createSmtpTransport({ host, port, user?, pass?, secure?, from })`
+- `createSmtpTransport({ host, port, user?, pass?, secure?, from, timeoutMs? })` (connection/greeting/socket timeout, default 15 s)
 - `createConsoleTransport({ logger? })`
 - `sendEach(transport, recipients, build, { logger? })`: one message per recipient, 5 concurrent, case-insensitive dedupe, returns `{ failed }`, throws only when all fail
 - `withSendLog(transport, { logger? })`: one log line per send, never logs bodies or headers
 - `parseAddress`, `escapeHtml`, `recipientCount`, `consoleLogger`
+
+### Bundlers (Next.js)
+
+`import("nodemailer")` is resolved at build time by webpack/Turbopack. Apps that do not
+install nodemailer should add `serverExternalPackages: ["@withwiz/email"]` to `next.config`,
+or install nodemailer.
 
 ### Logger
 

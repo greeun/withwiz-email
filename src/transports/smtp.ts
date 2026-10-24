@@ -7,6 +7,7 @@
  */
 import type { EmailMessage, EmailTransport } from "../types";
 import { recipientCount } from "../types";
+import { DEFAULT_TIMEOUT_MS } from "./rest";
 
 export interface SmtpTransportConfig {
   host: string;
@@ -16,6 +17,8 @@ export interface SmtpTransportConfig {
   /** Implicit TLS. Defaults to `port === 465`. */
   secure?: boolean;
   from: string;
+  /** Connection, greeting and socket timeout in ms. Default 15000. */
+  timeoutMs?: number;
 }
 
 interface SmtpSender {
@@ -31,12 +34,14 @@ async function loadNodemailer(): Promise<NodemailerLike> {
     const mod = (await import("nodemailer")) as unknown as { default?: NodemailerLike } & NodemailerLike;
     return mod.default ?? mod;
   } catch (cause) {
-    throw new Error("nodemailer is required for the smtp transport (install it: pnpm add nodemailer)", { cause });
+    const detail = cause instanceof Error ? cause.message : String(cause);
+    throw new Error(`nodemailer is required for the smtp transport (install it: pnpm add nodemailer): ${detail}`, { cause });
   }
 }
 
 export function createSmtpTransport(config: SmtpTransportConfig): EmailTransport {
   let sender: SmtpSender | undefined;
+  const timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
 
   return {
     name: "smtp",
@@ -50,6 +55,9 @@ export function createSmtpTransport(config: SmtpTransportConfig): EmailTransport
           port: config.port,
           secure: config.secure ?? config.port === 465,
           auth: config.user ? { user: config.user, pass: config.pass } : undefined,
+          connectionTimeout: timeoutMs,
+          greetingTimeout: timeoutMs,
+          socketTimeout: timeoutMs,
         });
       }
 

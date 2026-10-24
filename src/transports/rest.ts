@@ -12,6 +12,9 @@ import { recipientCount } from "../types";
 
 export const DEFAULT_TIMEOUT_MS = 15_000;
 
+/** Longest provider response body kept in an error message. */
+const MAX_ERROR_BODY = 500;
+
 export interface RestTransportSpec {
   name: EmailTransportName;
   /** Display name used in error messages (`Brevo send failed (...)`). */
@@ -39,16 +42,27 @@ export function createRestTransport(spec: RestTransportSpec): EmailTransport {
     async send(message: EmailMessage): Promise<void> {
       if (recipientCount(message) === 0) return;
 
-      const response = await doFetch(spec.endpoint, {
-        method: "POST",
-        headers: spec.headers,
-        body: JSON.stringify(spec.body(message)),
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+      let response: Response;
+      try {
+        response = await doFetch(spec.endpoint, {
+          method: "POST",
+          headers: spec.headers,
+          body: JSON.stringify(spec.body(message)),
+          signal: AbortSignal.timeout(timeoutMs),
+        });
+      } catch (cause) {
+        const name = cause instanceof Error ? cause.name : "";
+        if (name === "TimeoutError" || name === "AbortError") {
+          throw new Error(`${spec.label} send failed (timeout after ${timeoutMs}ms)`, { cause });
+        }
+        const detail = cause instanceof Error ? cause.message : String(cause);
+        throw new Error(`${spec.label} send failed: ${detail}`, { cause });
+      }
 
       // Read the body only when needed: stubs without `text()` must keep working.
       if (!response.ok) {
-        const detail = await response.text().catch(() => "");
+        const raw = await response.text().catch(() => "");
+        const detail = raw.length > MAX_ERROR_BODY ? `${raw.slice(0, MAX_ERROR_BODY)}…` : raw;
         throw new Error(`${spec.label} send failed (${response.status}): ${detail}`);
       }
       if (spec.afterOk) spec.afterOk(await response.text().catch(() => ""));
