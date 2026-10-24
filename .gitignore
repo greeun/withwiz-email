@@ -1,0 +1,28 @@
+node_modules
+dist
+coverage
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+.vitest-cache
+
+# Local agent tooling state (machine-local, never committed)
+.claude/
+.axt-profile.json
+.axt-profile.json.bak
+
+# claude code (guideline docs, local settings, session worktrees, auto-installed skills, MCP config)
+CLAUDE.md
+.claude.json
+.claude.json.*
+.claude-*.json
+
+# axt local profile (including backups)
+.axt/
+.axt*
+
+# ast (agent session tracker) local artifacts
+.ast/
+.ast*
