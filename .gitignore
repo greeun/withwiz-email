@@ -26,3 +26,5 @@ CLAUDE.md
 # ast (agent session tracker) local artifacts
 .ast/
 .ast*
+
+*.tgz
