@@ -1,0 +1,6 @@
+# Pins this package as its own pnpm workspace root.
+allowBuilds:
+  esbuild: true
+
+overrides:
+  esbuild: '>=0.28.1'
