@@ -4,6 +4,7 @@
  */
 import { parseAddress } from "../address";
 import type { EmailTransport } from "../types";
+import { attachmentBase64 } from "../types";
 import { createRestTransport } from "./rest";
 
 export const BREVO_ENDPOINT = "https://api.brevo.com/v3/smtp/email";
@@ -35,6 +36,9 @@ export function createBrevoTransport(config: BrevoTransportConfig): EmailTranspo
       ...(message.text ? { textContent: message.text } : {}),
       ...(message.html ? { htmlContent: message.html } : {}),
       ...(message.headers ? { headers: message.headers } : {}),
+      ...(message.replyTo ? { replyTo: parseAddress(message.replyTo) } : {}),
+      // Brevo infers the type from the file extension; there is no content-type field.
+      ...(message.attachments?.length ? { attachment: message.attachments.map((a) => ({ name: a.filename, content: attachmentBase64(a) })) } : {}),
     }),
     ...(config.fetchImpl ? { fetchImpl: config.fetchImpl } : {}),
     ...(config.timeoutMs !== undefined ? { timeoutMs: config.timeoutMs } : {}),

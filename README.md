@@ -74,6 +74,7 @@ const logger = { info: (m, meta) => appLogger.info(m, meta), error: (m, meta) =>
 - Mailjet reports per-message failures inside HTTP 200; the transport throws on them.
 - Zero recipients is a no-op success.
 - There is no `bcc`: send to many with `sendEach`.
+- `replyTo` (`Name <addr>` or a bare address) and `attachments` (`{ filename, content, contentType? }`, `content` is a string or bytes) work on every transport except console, which only logs. Brevo takes the type from the file extension. Attachment contents are never logged; provider size limits apply.
 
 ## License
 

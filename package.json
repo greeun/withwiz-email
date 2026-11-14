@@ -1,6 +1,6 @@
 {
   "name": "@withwiz/email",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Provider-agnostic transactional email transports (Brevo, Mailjet, Resend, SMTP, console) with env-based selection",
   "type": "module",
   "main": "./dist/index.cjs",

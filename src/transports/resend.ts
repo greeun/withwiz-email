@@ -3,6 +3,7 @@
  * zero runtime dependencies and fetch injection is enough for tests.
  */
 import type { EmailTransport } from "../types";
+import { attachmentBase64 } from "../types";
 import { createRestTransport } from "./rest";
 
 export const RESEND_ENDPOINT = "https://api.resend.com/emails";
@@ -31,6 +32,16 @@ export function createResendTransport(config: ResendTransportConfig): EmailTrans
       ...(message.text ? { text: message.text } : {}),
       ...(message.html ? { html: message.html } : {}),
       ...(message.headers ? { headers: message.headers } : {}),
+      ...(message.replyTo ? { reply_to: message.replyTo } : {}),
+      ...(message.attachments?.length
+        ? {
+            attachments: message.attachments.map((a) => ({
+              filename: a.filename,
+              content: attachmentBase64(a),
+              ...(a.contentType ? { content_type: a.contentType } : {}),
+            })),
+          }
+        : {}),
     }),
     ...(config.fetchImpl ? { fetchImpl: config.fetchImpl } : {}),
     ...(config.timeoutMs !== undefined ? { timeoutMs: config.timeoutMs } : {}),
