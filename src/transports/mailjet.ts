@@ -6,6 +6,7 @@
  */
 import { parseAddress } from "../address";
 import type { EmailTransport } from "../types";
+import { attachmentBase64, DEFAULT_ATTACHMENT_TYPE } from "../types";
 import { createRestTransport } from "./rest";
 
 export const MAILJET_ENDPOINT = "https://api.mailjet.com/v3.1/send";
@@ -38,6 +39,11 @@ function collectMessageErrors(raw: string): string[] {
   );
 }
 
+function mailjetAddress(value: string): { Email: string; Name?: string } {
+  const parsed = parseAddress(value);
+  return { Email: parsed.email, ...(parsed.name ? { Name: parsed.name } : {}) };
+}
+
 export function createMailjetTransport(config: MailjetTransportConfig): EmailTransport {
   const sender = parseAddress(config.from);
   const authorization = `Basic ${Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString("base64")}`;
@@ -59,6 +65,16 @@ export function createMailjetTransport(config: MailjetTransportConfig): EmailTra
           ...(message.text ? { TextPart: message.text } : {}),
           ...(message.html ? { HTMLPart: message.html } : {}),
           ...(message.headers ? { Headers: message.headers } : {}),
+          ...(message.replyTo ? { ReplyTo: mailjetAddress(message.replyTo) } : {}),
+          ...(message.attachments?.length
+            ? {
+                Attachments: message.attachments.map((a) => ({
+                  ContentType: a.contentType ?? DEFAULT_ATTACHMENT_TYPE,
+                  Filename: a.filename,
+                  Base64Content: attachmentBase64(a),
+                })),
+              }
+            : {}),
         },
       ],
     }),

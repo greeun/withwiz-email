@@ -1,4 +1,4 @@
-export type { EmailLogger, EmailMessage, EmailRecipient, EmailTransport, EmailTransportName } from "./types";
+export type { EmailAttachment, EmailLogger, EmailMessage, EmailRecipient, EmailTransport, EmailTransportName } from "./types";
 export { escapeHtml, recipientCount } from "./types";
 export type { EmailAddress } from "./address";
 export { parseAddress } from "./address";

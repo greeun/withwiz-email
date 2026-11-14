@@ -16,6 +16,10 @@ export interface EmailMessage {
   subject: string;
   text?: string;
   html?: string;
+  /** Address replies go to: `Name <addr>` or a bare address. Each transport maps it to its provider's reply-to field. */
+  replyTo?: string;
+  /** Files to attach. Contents are never logged. */
+  attachments?: EmailAttachment[];
   /**
    * Extra mail headers (e.g. `List-Unsubscribe`). Each transport maps them to
    * its provider's field. Values may carry unsubscribe tokens, so nothing logs them.
@@ -23,6 +27,23 @@ export interface EmailMessage {
   headers?: Record<string, string>;
   /** One-line summary the console transport logs instead of the default. */
   logSummary?: string;
+}
+
+/** One attached file. A string `content` is sent as UTF-8 text; pass bytes for binary files. */
+export interface EmailAttachment {
+  filename: string;
+  content: string | Uint8Array;
+  /** MIME type. Defaults to `application/octet-stream`. */
+  contentType?: string;
+}
+
+export const DEFAULT_ATTACHMENT_TYPE = "application/octet-stream";
+
+/** Base64 of an attachment's content, the form every HTTP provider expects. */
+export function attachmentBase64(attachment: EmailAttachment): string {
+  return typeof attachment.content === "string"
+    ? Buffer.from(attachment.content, "utf8").toString("base64")
+    : Buffer.from(attachment.content).toString("base64");
 }
 
 export type EmailTransportName = "brevo" | "mailjet" | "resend" | "smtp" | "console";
