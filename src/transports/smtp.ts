@@ -68,6 +68,16 @@ export function createSmtpTransport(config: SmtpTransportConfig): EmailTransport
         ...(message.text ? { text: message.text } : {}),
         ...(message.html ? { html: message.html } : {}),
         ...(message.headers ? { headers: message.headers } : {}),
+        ...(message.replyTo ? { replyTo: message.replyTo } : {}),
+        ...(message.attachments?.length
+          ? {
+              attachments: message.attachments.map((a) => ({
+                filename: a.filename,
+                content: typeof a.content === "string" ? a.content : Buffer.from(a.content),
+                ...(a.contentType ? { contentType: a.contentType } : {}),
+              })),
+            }
+          : {}),
       });
     },
   };

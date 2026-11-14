@@ -73,6 +73,7 @@ const logger = { info: (m, meta) => appLogger.info(m, meta), error: (m, meta) =>
 - Mailjet은 메시지별 실패를 HTTP 200 응답 안에 담아 보고하며, 전송 모듈은 이를 예외로 던집니다.
 - 수신자가 0명이면 아무 일도 하지 않고 성공으로 처리합니다.
 - `bcc`는 없습니다. 여러 명에게 보낼 때는 `sendEach`를 사용하세요.
+- `replyTo`(`이름 <주소>` 또는 주소)와 `attachments`(`{ filename, content, contentType? }`, `content`는 문자열 또는 바이트)는 console 을 제외한 모든 발송기에서 동작합니다. console 은 기록만 합니다. Brevo 는 파일 확장자로 형식을 정합니다. 첨부의 내용은 기록하지 않으며, 발송 서비스의 크기 제한이 적용됩니다.
 
 ## 라이선스
 
