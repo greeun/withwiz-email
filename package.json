@@ -1,7 +1,7 @@
 {
   "name": "@withwiz/email",
-  "version": "0.2.0",
-  "description": "Provider-agnostic transactional email transports (Brevo, Mailjet, Resend, SMTP, console) with env-based selection",
+  "version": "0.3.0",
+  "description": "Provider-agnostic transactional email transports (Brevo, Mailjet, Resend, SMTP, console) with env-based selection, plus a read-only IMAP/POP3/Microsoft Graph inbox reader",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
@@ -11,6 +11,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs"
+    },
+    "./reader": {
+      "types": "./dist/reader/index.d.ts",
+      "import": "./dist/reader/index.mjs",
+      "require": "./dist/reader/index.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -24,14 +29,21 @@
     "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
+    "imapflow": "^2.12.1",
+    "mailparser": "^3.14.5",
     "nodemailer": ">=6.0.0"
   },
   "peerDependenciesMeta": {
+    "imapflow": { "optional": true },
+    "mailparser": { "optional": true },
     "nodemailer": { "optional": true }
   },
   "devDependencies": {
+    "@types/mailparser": "^3.9.0",
     "@types/node": "^22.0.0",
     "@types/nodemailer": "^8.0.0",
+    "imapflow": "^2.12.1",
+    "mailparser": "^3.14.5",
     "nodemailer": "^9.1.1",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
@@ -41,7 +53,7 @@
   "packageManager": "pnpm@11.10.0",
   "license": "MIT",
   "author": "withwiz",
-  "keywords": ["email", "transactional", "brevo", "mailjet", "resend", "smtp", "nodemailer", "withwiz"],
+  "keywords": ["email", "transactional", "brevo", "mailjet", "resend", "smtp", "nodemailer", "imap", "pop3", "microsoft-graph", "withwiz"],
   "publishConfig": { "access": "public" },
   "repository": {
     "type": "git",

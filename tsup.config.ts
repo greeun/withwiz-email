@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: { index: "src/index.ts", "reader/index": "src/reader/index.ts" },
   format: ["esm", "cjs"],
   outExtension({ format }) {
     return { js: format === "esm" ? ".mjs" : ".cjs" };
@@ -13,5 +13,5 @@ export default defineConfig({
   treeshake: true,
   target: "node18",
   platform: "node",
-  external: ["nodemailer"],
+  external: ["nodemailer", "imapflow", "mailparser"],
 });
